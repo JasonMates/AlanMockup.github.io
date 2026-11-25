@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alan Mauries · Website concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bar: 56px; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #141210; color: #f2ede4; font-family: Inter, system-ui, sans-serif; }
+  header {
+    height: var(--bar); display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 0 clamp(14px, 3vw, 28px); border-bottom: 1px solid rgba(242, 237, 228, .12);
+  }
+  .name { font-size: 13px; font-weight: 600; letter-spacing: .08em; white-space: nowrap; }
+  .name span { font-weight: 400; color: #b9b1a5; letter-spacing: .02em; margin-left: 8px; }
+  .switch { display: inline-flex; padding: 3px; border: 1px solid rgba(242, 237, 228, .2); border-radius: 999px; }
+  .switch button {
+    min-height: 38px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: #cfc8bc;
+    font: 500 13px Inter, system-ui, sans-serif; cursor: pointer; white-space: nowrap;
+  }
+  .switch button[aria-pressed="true"] { background: #f2ede4; color: #141210; }
+  .switch button:focus-visible, .solo:focus-visible { outline: 2px solid #e1952b; outline-offset: 2px; }
+  .solo { font-size: 13px; color: #cfc8bc; text-decoration: none; white-space: nowrap; }
+  .solo:hover { color: #f2ede4; }
+  iframe { display: block; width: 100%; height: calc(100% - var(--bar)); border: 0; background: #141210; }
+  @media (max-width: 680px) {
+    .name span, .solo { display: none; }
+    .switch button { padding: 0 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="name">Alan Mauries<span>Website concepts</span></div>
+  <div class="switch" role="group" aria-label="Choose a concept">
+    <button type="button" data-view="hero" aria-pressed="true">Serape + portrait hero</button>
+    <button type="button" data-view="gallery" aria-pressed="false">Gallery walk</button>
+  </div>
+  <a class="solo" id="solo" href="hero.html" target="_blank" rel="noopener">Open on its own</a>
+</header>
+<iframe id="view" src="hero.html" title="Serape + portrait hero"></iframe>
+<script>
+  var views = {
+    hero: { src: 'hero.html', title: 'Serape + portrait hero' },
+    gallery: { src: 'gallery.html', title: 'Gallery walk' }
+  };
+  var frame = document.getElementById('view'), solo = document.getElementById('solo');
+  var buttons = document.querySelectorAll('[data-view]');
+  function show(name, push) {
+    var v = views[name] || views.hero;
+    if (!views[name]) name = 'hero';
+    if (frame.getAttribute('src') !== v.src) frame.setAttribute('src', v.src);
+    frame.title = v.title; solo.href = v.src;
+    buttons.forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.view === name ? 'true' : 'false'); });
+    if (push) history.replaceState(null, '', '#' + name);
+  }
+  buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.view, true); }); });
+  window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
+  show(location.hash.slice(1) || 'hero');
+</script>
+</body>
+</html>
